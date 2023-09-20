@@ -1,5 +1,6 @@
 import sys
 sys.setrecursionlimit(10**9)
+# 스택 영역 확보
 pre = []
 while True:                            
     try:
