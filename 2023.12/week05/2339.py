@@ -2,7 +2,7 @@
 def cutting(x_st, y_st, x_ed, y_ed, prevRowCut):
     
     dirty = []  # 불순물
-    dia = 0     # 보석결정체
+    dia = 0     # 보석
     
     for x in range(x_st, x_ed):
         for y in range(y_st, y_ed):
@@ -16,29 +16,28 @@ def cutting(x_st, y_st, x_ed, y_ed, prevRowCut):
 
     count = 0   # 자르는 횟수
 
-    if prevRowCut != True:
-        for nx, ny in dirty:                # 불순물의 x,y 좌표
+    if prevRowCut:							# 이전에 가로로 자름 -> 세로로 자르기
+        for nx, ny in dirty:                # nx : 불순물의 x좌표
             can_cut = True                  # 자를 수 있는 여부
             for i in range(y_st, y_ed):
-                if stones[nx][i] == 2:  # 불순물이 있는 nx줄(row)에 있는 y 중 다이아가 있는 경우 
-                    can_cut = False
-                    break                   # 다이아 있는 줄은 자를 수 없기 때문
-            if can_cut:                     # nx줄에 있는 y 중 다이아가 없는 경우
-                count += (cutting(x_st, y_st, nx, y_ed, True) * cutting(nx + 1, y_st, x_ed, y_ed, True)) 
-                # x_ed를 nx로 업데이트해준다. x_st를 nx+1로 업데이트해준다.
-                # x는 검토를 완료했으니, prevRowCut를 True로 바꾸어 밑의 if문(col줄)을 검사해준다.
-                # 총 count = 왼쪽 석판에서 나온 count * 오른쪽 석판에서 나온 count
-
-    if prevRowCut:
-        for nx, ny in dirty:
-            can_cut = True
-            for i in range(x_st, x_ed):
-                if stones[i][ny] == 2:  # 불순물이 있는 y줄(ny)에 있는 x 중 다이아가 있는 경우
+                if stones[nx][i] == 2:		# 불순물이 있는 nx줄에 y 중 보석 있음 -> 자르기 불가
                     can_cut = False
                     break
-            if can_cut:                 # ny줄에 있는 x 중 다이아가 없는 경우
-                count += (cutting(x_st, y_st, x_ed, ny, False) * cutting(x_st, ny + 1, x_ed, y_ed, False))
-                # y_ed를 ny로 업데이트해준다. y_st를 ny+1로 업데이트해준다.
+            if can_cut:                     # 불순물이 있는 nx줄에 있는 y 중 보석 없음
+                count += (cutting(x_st, y_st, nx, y_ed, False) * cutting(nx + 1, y_st, x_ed, y_ed, False)) 
+                # x줄의 end 지점을 nx로 변경 / x줄의 start 지점을 nx+1로 변경
+                # 현재 세로로 석판을 잘랐음으로, prevRowCut 을 False 로 변경
+                # count += 왼쪽 석판에서 나온 count * 오른쪽 석판에서 나온 count
+
+    if prevRowCut != True:
+        for nx, ny in dirty:                # ny : 불순물의 y좌표
+            can_cut = True
+            for i in range(x_st, x_ed):
+                if stones[i][ny] == 2:  	# 불순물이 있는 ny줄에 x 중 보석 있음 -> 자르기 불가
+                    can_cut = False
+                    break
+            if can_cut:                 	# 불순물이 있는 ny줄에 있는 x 중 보석 없음
+                count += (cutting(x_st, y_st, x_ed, ny, True) * cutting(x_st, ny + 1, x_ed, y_ed, True))
 
     return count
 
